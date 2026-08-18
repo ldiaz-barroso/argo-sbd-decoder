@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.kiro/
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+ehthumbs.db
+
+# User-specific configuration (use settings.template.json as reference)
+config/settings.json
+
+# Runtime logs
+logs/*.log
+
+# Generated products (output of the decoder)
+scripts/products/
+products/
+
+# Legacy NKE proprietary parser (not distributed)
+tools/
+
+# Test output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data files (not part of the source code — too large for git)
+*.sbd
+*.nc
+*.7z
+*.gz
+resources/gebco/
+
+# PyInstaller build artefacts
+*.spec
+*.exe
+*.dmg

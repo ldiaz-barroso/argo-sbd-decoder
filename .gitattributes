@@ -1,0 +1,26 @@
+# Auto-detect text files and perform LF normalization
+* text=auto
+
+# Force LF for shell scripts (critical for Linux/macOS)
+*.sh text eol=lf
+launch.sh text eol=lf
+
+# Force CRLF for Windows batch files
+*.bat text eol=crlf
+
+# Python files: LF
+*.py text eol=lf
+
+# Markdown/docs: LF
+*.md text eol=lf
+
+# JSON/YAML config: LF
+*.json text eol=lf
+*.yml text eol=lf
+
+# Binary files (do not modify)
+*.png binary
+*.ico binary
+*.sbd binary
+*.nc binary
+*.gz binary
