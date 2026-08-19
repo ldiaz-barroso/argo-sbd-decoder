@@ -1307,6 +1307,7 @@ def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 
         info_lines.append(f"Speed: {speed:.0f} m/h")
     if np.isfinite(heading):
         info_lines.append(f"Heading: {heading:.0f}\u00b0")
+    info_lines.append(f"Position: {last_row['lat']:.6f}, {last_row['lon']:.6f}")
     t_last = pd.to_datetime(last_row.get("timestamp"), errors="coerce")
     if pd.notna(t_last):
         info_lines.append(f"Last fix: {t_last.strftime('%Y-%m-%d %H:%M UTC')}")
