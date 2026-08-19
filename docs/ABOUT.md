@@ -14,14 +14,14 @@ Float operators deploying and monitoring Argo floats need to:
 2. **Monitor float health** over time — internal vacuum, battery, drift speed.
 3. **Plan float recoveries** — knowing the precise position of the float at the surface is critical for ship recovery operations.
 
-Previously, this required either the proprietary NKE Instrumentation Parser (Windows-only, closed-source, no longer maintained) or direct access to the Coriolis MATLAB decoder (requires a MATLAB license). Our tool eliminates both dependencies.
+Previously, this required proprietary software or direct access to the Coriolis MATLAB decoder. Our tool eliminates both dependencies — it is built entirely in Python and runs on any platform.
 
 ## Key Features
 
-### Decoding (replaces NKE Parser)
+### SBD Decoding
 
-- Decodes binary SBD files (100-byte Iridium frames) into human-readable CSV tables
-- Supports **29 NKE float types**: ARVOR, ARVOR-ARN (ice), ARVOR-Deep (4000m), ARVOR-C (coastal), PROVOR
+- Decodes binary SBD files into human-readable CSV tables
+- Supports **87 float types** across NKE, APEX and NOVA/DOVA platforms
 - Extracts CTD profiles (pressure, temperature, salinity), hydraulic actions, and engineering data
 - Sensor conversions verified bit-by-bit against the Coriolis MATLAB decoder (version 085h, July 2026)
 
@@ -91,7 +91,7 @@ The graphical interface (built with Python tkinter) is identical on all platform
 
 ## Supported Float Types
 
-29 NKE Iridium SBD float versions, covering all current operational types:
+87 decoder IDs across 5 platforms, covering all Argo floats with Iridium SBD transmission:
 
 - **ARVOR-ARN / Ice** (decoder IDs 210-212, 217, 222-227, 231, 232) — standard Argo floats with ice detection
 - **ARVOR-Deep** (IDs 201-203, 215, 216, 218, 221, 228-230) — deep-capable floats profiling to 3500-4000m
@@ -120,4 +120,4 @@ Based on: Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent,
 
 ## License
 
-CeCILL v2.1 (GPL-compatible free software license).
+MIT License.

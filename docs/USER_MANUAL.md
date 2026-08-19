@@ -345,4 +345,4 @@ Download the GEBCO 2024 grid from https://www.gebco.net (NetCDF format) and set 
 
 ## License
 
-The Coriolis decoder source is licensed under CeCILL (GPL-compatible). This application follows the same license terms.
+MIT License.

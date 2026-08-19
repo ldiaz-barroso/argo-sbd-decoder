@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # =============================================================================
-# SOCIB Argo SBD Decoder â€” Cross-platform launcher (Linux / macOS)
-#
+# Argo SBD Decoder - Cross-platform launcher (Linux / macOS)
+# =============================================================================
 # Usage:
 #   ./launch.sh                          # Interactive mode (CLI menu)
 #   ./launch.sh decode --root /path --decoder_id 212
 #   ./launch.sh download --email x --imei y --since 20260101 --before 20260201
-#
+# =============================================================================
 # Requirements:
 #   Python 3.8+ with packages in requirements.txt
 # =============================================================================
@@ -43,9 +43,9 @@ fi
 echo "Using Python: $PYTHON ($($PYTHON --version 2>&1))"
 echo ""
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# =============================================================================
 # Commands
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# =============================================================================
 
 case "${1:-menu}" in
 
@@ -124,13 +124,13 @@ case "${1:-menu}" in
 
     menu|"")
         echo "=============================================="
-        echo " Argo SBD Decoder v5.0"
+        echo " Argo SBD Decoder v5.2"
         echo " 87 decoder IDs | All SBD float families"
         echo " Cross-platform (Linux/macOS/Windows)"
         echo "=============================================="
         echo ""
         echo "Commands:"
-        echo "  ./launch.sh decode        Decode SBD files (replaces NKE parser)"
+        echo "  ./launch.sh decode        Decode SBD files to CSV"
         echo "  ./launch.sh download      Download SBD from Gmail/IMAP"
         echo "  ./launch.sh quicklook     Generate TS diagrams and sections"
         echo "  ./launch.sh forecast      Forecast position, maps, KMZ, health"
