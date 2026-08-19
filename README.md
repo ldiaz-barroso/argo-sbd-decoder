@@ -4,11 +4,11 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 
 ## Main features
 
-- **Position prediction for float recovery** — validated median error of 27 m in EOL mode
 - Pure Python SBD decoder covering 87 float types across all major manufacturers
 - Download SBD from any IMAP email provider (Gmail, Outlook, Yahoo, iCloud, custom)
 - Cross-platform: **Linux, macOS, Windows** (GUI + CLI)
 - Generate TS diagrams, temporal sections, trajectory maps and KMZ files
+- **Position prediction for float recovery** — validated median error of 27 m in EOL mode
 - Float health monitoring: internal vacuum, drift speed, range plots
 
 > **Note:** The decoder covers 87 float types based on the [Coriolis MATLAB decoder](https://doi.org/10.17882/45589). Currently tested and validated with real SBD data for **ARVOR I** and **ARVOR C**. Other float types will be validated as we gain access to their SBD files.
@@ -41,9 +41,13 @@ python app/gui.py
 
 The application estimates where the float will surface next using linear extrapolation of the last two GPS fixes. Method suggested by **Gene Massion (MBARI)**.
 
+**End-of-Life (EOL) mode:** The float stays at the surface transmitting GPS fixes every few minutes. Surface drift is consistent, so linear extrapolation gives accurate estimates for recovery planning.
+
+**Short-cycle profiling (depth < 500 m):** Floats with cycle times of 12–48 hours also benefit from accurate predictions because the net displacement between surfacings is well captured by the linear model.
+
 ### Validation
 
-Using real recovery data from an ARVOR-C float (Western Mediterranean Sea):
+Using real recovery data from an ARVOR-C float (Western Mediterranean Sea). Position predictions began being transmitted to vessel operators at 07:45 UTC; by 08:20 UTC the float had been recovered.
 
 | Mode | N predictions | Median error | Mean error | Max |
 |------|--------------|-------------|------------|-----|
@@ -52,7 +56,9 @@ Using real recovery data from an ARVOR-C float (Western Mediterranean Sea):
 
 In the EOL validation, the float transmitted a GPS fix every ~2 minutes while drifting at the surface. In profiling mode, fixes were separated by ~24 hours (one dive cycle).
 
-The prediction is most reliable after two consecutive GPS fixes of the same type. The first prediction after a mode transition has higher error because the displacement vector mixes two different drift regimes.
+The prediction is most reliable after two consecutive GPS fixes of the same type. The first prediction after a mode transition (e.g. from profiling to EOL) has higher error because the displacement vector mixes two different drift regimes. Once the float establishes a consistent pattern, accuracy improves significantly.
+
+For deep-ocean floats with long cycles (5–10 days, profiling to 2000–6000 m), prediction accuracy decreases because subsurface currents can differ significantly from surface drift. In such cases, combine predictions with ocean current forecasts (e.g. Copernicus Marine Service).
 
 <p align="center">
   <img src="./assets/prediction_validation.png" width="100%" alt="Position prediction validation">
