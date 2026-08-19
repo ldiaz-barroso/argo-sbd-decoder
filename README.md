@@ -8,8 +8,6 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 - **Pure Python SBD decoder** covering 87 float types across all major manufacturers
 - Cross-platform: **Linux, macOS, Windows** (GUI + CLI)
 - Generate TS diagrams, temporal sections, trajectory maps and KMZ files
-- Optional **GEBCO bathymetry** overlay on maps and sections
-- Calculate density contours using TEOS-10 (`gsw`)
 - Float health monitoring: internal vacuum, drift speed, range plots
 
 > **Note:** The decoder covers 87 float types based on the [Coriolis MATLAB decoder](https://doi.org/10.17882/45589). Currently tested and validated with real SBD data for **ARVOR I** and **ARVOR C**. Other float types will be validated as we gain access to their SBD files.
@@ -24,8 +22,6 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 | **APEX APF9** | 1001-1016, 1314 | Teledyne/Webb APEX APF9 | Text .msg/.log parsing |
 | **APEX APF11** | 1101-1132, 1321-1323 | Teledyne/Webb APEX APF11 | Binary science_log + text system_log |
 | **NOVA/DOVA** | 2001-2003 | NVS NOVA (CTD) and DOVA (CTD+DO) | Variable-length SBD messages |
-
-Total: **87 decoder IDs, 9 decoder classes, 5 platforms**.
 
 ## Supported platforms
 
