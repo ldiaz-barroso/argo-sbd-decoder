@@ -872,7 +872,6 @@ def load_positions(root: Path, technical_csv: str, imei: str = "") -> pd.DataFra
                     lon_col = header_row.index("longitude")
                     cycle_col = next((i for i, h in enumerate(header_row) if "cycle" in h), None)
                     date_col = next((i for i, h in enumerate(header_row) if h == "date"), None)
-                    has_profile_col = next((i for i, h in enumerate(header_row) if "has profile" in h or "has_profile" in h), None)
 
                     flat_rows = []
                     for row_idx in range(1, raw_flat.shape[0]):
@@ -896,14 +895,6 @@ def load_positions(root: Path, technical_csv: str, imei: str = "") -> pd.DataFra
                             if date_str:
                                 t = pd.to_datetime(date_str, errors="coerce")
 
-                        # Determine has_profile from CSV column or fallback to cycle_num
-                        has_profile_val = False
-                        if has_profile_col is not None:
-                            hp = safe_float(row.iloc[has_profile_col])
-                            has_profile_val = bool(np.isfinite(hp) and int(hp) == 1)
-                        else:
-                            has_profile_val = cycle_num > 0
-
                         flat_rows.append({
                             "IMEI": imei,
                             "SOURCE_FILE": str(path),
@@ -912,8 +903,8 @@ def load_positions(root: Path, technical_csv: str, imei: str = "") -> pd.DataFra
                             "CYCLE_NUMBER": float(cycle_num),
                             "LATITUDE": lat_val,
                             "LONGITUDE": lon_val,
-                            "RECORD_TYPE": "profile" if has_profile_val else "gps_surface_only",
-                            "HAS_PROFILE": has_profile_val,
+                            "RECORD_TYPE": "profile" if cycle_num > 0 else "gps_surface_only",
+                            "HAS_PROFILE": cycle_num > 0,
                             "SOURCE_COLUMN_INDEX": row_idx,
                         })
 
