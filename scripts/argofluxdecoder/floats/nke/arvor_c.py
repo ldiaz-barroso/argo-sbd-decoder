@@ -99,19 +99,11 @@ class ArvorCDecoder(BaseDecoder):
         self._current_deep_cycle = any(values[i] != 0 for i in range(5)) or values[21] != 0
         self._current_exp_nb_asc = values[21]  # Expected number of CTD ascent packets
 
-        # ── Float time: hour=values[10], minute=values[11], second=values[12] ──
-        # In MATLAB these are tabTech(13), tabTech(14), tabTech(15) → 0-based: 12, 13, 14
-        # But our layout: first 6 are 16-bit (indices 0-5), then 16,16,16,8,8,8 (indices 6-11)
-        # So hour=values[9], minute=values[10], second=values[11]
-        # Actually let me recount: 6×16 gives indices 0-5, then 16,16,16 gives 6,7,8, then 8,8,8 gives 9,10,11
-        # MATLAB tabTech(13)=hour → our values[12] (6+6=12th, 0-based)
-        # Let me just index it properly:
-        # Layout positions (0-based): [0..5]=6×16, [6]=16, [7]=16, [8]=16, [9]=8, [10]=8, [11]=8
-        #                              [12..21]=10×8, [22]=8, [23]=8, [24]=16, [25]=8, [26]=8, [27]=8, [28]=16, [29]=8
-        #                              [30]=8, [31]=8, [32]=448
-        hour = values[9]
-        minute = values[10]
-        second = values[11]
+        # ── Float time: MATLAB tabTech(13)=hour, tabTech(14)=minute, tabTech(15)=second
+        # In 0-based indexing: values[12], values[13], values[14]
+        hour = values[12]
+        minute = values[13]
+        second = values[14]
 
         # ── Pressure sensor offset (signed 8-bit) at MATLAB index 16 = our index 15 ──
         # Actually MATLAB tabTech(16) is the 16th value. Let me count our layout:
