@@ -1235,8 +1235,9 @@ def plot_series(df: pd.DataFrame, outdir: Path, imei: str) -> list[Path]:
         ("battery_voltage_drop_at_pmax","Battery voltage drop at Pmax",True),
         ("internal_pressure_mbar","Internal pressure (mbar)",True),
         ("internal_temperature_degC","Internal temperature (degC)",True),
-        ("speed_m_per_hour","Navigation speed (m/hour)",False),
-        ("range_m","Range from previous fix (m)",False),
+        ("speed_m_per_hour","Drift speed (m/hour)",False),
+        ("heading_deg","Drift heading (degrees)",False),
+        ("range_m","Range between fixes (m)",False),
     ]
     for col,label,profiles_only in variables:
         if col not in df.columns: continue
@@ -1257,6 +1258,86 @@ def plot_series(df: pd.DataFrame, outdir: Path, imei: str) -> list[Path]:
         out=outdir/f"{col}_IMEI_{imei or 'unknown'}.png"
         fig.savefig(out,dpi=300,bbox_inches="tight"); plt.close(fig); outputs.append(out)
     return outputs
+
+
+def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 10) -> Path | None:
+    """Generate a zoom map of the last N positions with prediction vector for recovery."""
+    if df.empty or len(df) < 3:
+        return None
+
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    # Use last n_last positions
+    last = df.tail(n_last).copy()
+    has_pred = last["predicted_lat"].notna() & last["predicted_lon"].notna()
+
+    fig, ax = plt.subplots(figsize=(8, 7))
+
+    # Trajectory of last fixes
+    ax.plot(last["lon"], last["lat"], "o-", color="#333333", markersize=6,
+            linewidth=1.5, alpha=0.8, zorder=3)
+
+    # Label each point with nav_index or timestamp
+    for _, row in last.iterrows():
+        t = pd.to_datetime(row.get("timestamp"), errors="coerce")
+        label = t.strftime("%H:%M") if pd.notna(t) and t.hour + t.minute > 0 else f"#{int(row['nav_index'])}"
+        ax.annotate(label, (row["lon"], row["lat"]), textcoords="offset points",
+                    xytext=(5, 5), fontsize=7, color="#333333")
+
+    # Last known position (highlighted)
+    last_row = last.iloc[-1]
+    ax.scatter(last_row["lon"], last_row["lat"], s=120, color="#2E7D32", edgecolor="white",
+               linewidths=2, zorder=6, label="Last known position")
+
+    # Prediction vector and predicted position
+    if has_pred.any():
+        pred_row = last[has_pred].iloc[-1]
+        ax.annotate("", xy=(pred_row["predicted_lon"], pred_row["predicted_lat"]),
+                    xytext=(pred_row["lon"], pred_row["lat"]),
+                    arrowprops=dict(arrowstyle="-|>", color="#D32F2F", lw=2))
+        ax.scatter(pred_row["predicted_lon"], pred_row["predicted_lat"], s=100,
+                   marker="X", color="#D32F2F", edgecolor="white", linewidths=1.5,
+                   zorder=7, label="Predicted next position")
+
+    # Speed and heading annotation
+    speed = pd.to_numeric(last_row.get("speed_m_per_hour", np.nan), errors="coerce")
+    heading = pd.to_numeric(last_row.get("heading_deg", np.nan), errors="coerce")
+    info_lines = []
+    if np.isfinite(speed):
+        info_lines.append(f"Speed: {speed:.0f} m/h")
+    if np.isfinite(heading):
+        info_lines.append(f"Heading: {heading:.0f}\u00b0")
+    t_last = pd.to_datetime(last_row.get("timestamp"), errors="coerce")
+    if pd.notna(t_last):
+        info_lines.append(f"Last fix: {t_last.strftime('%Y-%m-%d %H:%M UTC')}")
+    if info_lines:
+        ax.text(0.02, 0.98, "\n".join(info_lines), transform=ax.transAxes,
+                fontsize=9, verticalalignment="top",
+                bbox=dict(boxstyle="round,pad=0.4", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
+
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_title(f"Recovery position - IMEI {imei}" if imei else "Recovery position")
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc="lower right", fontsize=8)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # Tight padding around data
+    lons = list(last["lon"])
+    lats = list(last["lat"])
+    if has_pred.any():
+        lons.append(pred_row["predicted_lon"])
+        lats.append(pred_row["predicted_lat"])
+    lon_pad = max((max(lons) - min(lons)) * 0.2, 0.001)
+    lat_pad = max((max(lats) - min(lats)) * 0.2, 0.001)
+    ax.set_xlim(min(lons) - lon_pad, max(lons) + lon_pad)
+    ax.set_ylim(min(lats) - lat_pad, max(lats) + lat_pad)
+
+    out = outdir / f"recovery_zoom_IMEI_{imei or 'unknown'}.png"
+    fig.savefig(out, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    return out
 
 
 def main():
@@ -1302,6 +1383,7 @@ def main():
     kmz = write_kmz(df_nav, kmz_dir, imei=args.imei)
     map_png = plot_map(df_nav, map_dir, imei=args.imei)
     series_pngs = plot_series(df_nav, nav_dir, imei=args.imei)
+    recovery_png = plot_recovery_zoom(df_nav, nav_dir, imei=args.imei)
 
     print(f"TECHNICAL_FILES_READ={len(files_df)}")
     print(f"TECHNICAL_FILES_CSV={files_csv}")
@@ -1313,6 +1395,8 @@ def main():
     print(f"NAVIGATION_KMZ={kmz}")
     if map_png:
         print(f"NAVIGATION_MAP={map_png}")
+    if recovery_png:
+        print(f"RECOVERY_MAP={recovery_png}")
     for p in series_pngs:
         print(f"NAVIGATION_PLOT={p}")
     print("NAVIGATION_PRODUCTS_DONE")
