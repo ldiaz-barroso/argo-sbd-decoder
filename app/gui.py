@@ -276,7 +276,7 @@ class ArgoDecoderApp:
         tk.Entry(parent, textvariable=self.var_wmo, width=12, bg="#f0f4f8", relief="solid", bd=1).grid(row=row, column=3, sticky="w")
         row += 1
 
-        tk.Label(parent, text="Root folder", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
+        tk.Label(parent, text="Working folder", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
         self.var_root = tk.StringVar(value=s.get("float_root", ""))
         tk.Entry(parent, textvariable=self.var_root, width=50, bg="#f0f4f8", relief="solid", bd=1).grid(row=row, column=1, columnspan=2, sticky="ew", padx=(4, 4))
         tk.Button(parent, text="Browse", command=self._browse_root, width=7, bg="#e2e6ea", relief="raised", bd=1).grid(row=row, column=3, sticky="w")
@@ -291,7 +291,7 @@ class ArgoDecoderApp:
         # ── Section 2: Download ──
         ttk.Separator(parent, orient="horizontal").grid(row=row, column=0, columnspan=4, sticky="ew", pady=8)
         row += 1
-        tk.Label(parent, text="2. DOWNLOAD SBD", font=("Segoe UI", 10, "bold"),
+        tk.Label(parent, text="2. DOWNLOAD SBDs", font=("Segoe UI", 10, "bold"),
                  fg="#003366", bg="white").grid(row=row, column=0, columnspan=4, sticky="w", pady=(0, 6))
         row += 1
 
@@ -327,7 +327,7 @@ class ArgoDecoderApp:
         # Show/hide server details based on provider
         self._toggle_imap_details()
 
-        tk.Label(parent, text="Email", bg="white", fg="#222222").grid(row=row, column=0, sticky="w")
+        tk.Label(parent, text="Email address", bg="white", fg="#222222").grid(row=row, column=0, sticky="w")
         self.var_email = tk.StringVar(value=s.get("email", s.get("gmail", "")))
         tk.Entry(parent, textvariable=self.var_email, width=25, bg="#f0f4f8", relief="solid", bd=1).grid(row=row, column=1, sticky="w", padx=(4, 8))
         tk.Label(parent, text="App password", bg="white", fg="#222222").grid(row=row, column=2, sticky="w")
@@ -335,7 +335,7 @@ class ArgoDecoderApp:
         tk.Entry(parent, textvariable=self.var_pwd, show="*", width=18, bg="#f0f4f8", relief="solid", bd=1).grid(row=row, column=3, sticky="w")
         row += 1
 
-        tk.Label(parent, text="From", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
+        tk.Label(parent, text="From (YYYYMMDD)", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
         date_frame_from = tk.Frame(parent, bg="white")
         date_frame_from.grid(row=row, column=1, sticky="w", padx=(4, 8))
         self.var_since = tk.StringVar(value=s.get("last_since", ""))
@@ -344,7 +344,7 @@ class ArgoDecoderApp:
         tk.Button(date_frame_from, text="📅", command=lambda: self._pick_date(self.var_since),
                   relief="raised", bd=1, font=("Segoe UI", 9), cursor="hand2").pack(side="left", padx=2)
 
-        tk.Label(parent, text="Until", bg="white", fg="#222222").grid(row=row, column=2, sticky="w")
+        tk.Label(parent, text="Until (YYYYMMDD)", bg="white", fg="#222222").grid(row=row, column=2, sticky="w")
         date_frame_until = tk.Frame(parent, bg="white")
         date_frame_until.grid(row=row, column=3, sticky="w")
         self.var_before = tk.StringVar(value=s.get("last_before", ""))
@@ -354,7 +354,7 @@ class ArgoDecoderApp:
                   relief="raised", bd=1, font=("Segoe UI", 9), cursor="hand2").pack(side="left", padx=2)
         row += 1
 
-        tk.Label(parent, text="Sender", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
+        tk.Label(parent, text="Sender address", bg="white", fg="#222222").grid(row=row, column=0, sticky="w", pady=4)
         self.var_sender = tk.StringVar(value=s.get("imap_sender", "sbdservice@sbd.iridium.com"))
         tk.Entry(parent, textvariable=self.var_sender, width=35, bg="#f0f4f8", relief="solid", bd=1).grid(row=row, column=1, columnspan=2, sticky="w", padx=(4, 8))
         row += 1
@@ -375,14 +375,13 @@ class ArgoDecoderApp:
         # ── Section 3: Processing ──
         ttk.Separator(parent, orient="horizontal").grid(row=row, column=0, columnspan=4, sticky="ew", pady=8)
         row += 1
-        tk.Label(parent, text="3. PROCESSING", font=("Segoe UI", 10, "bold"),
+        tk.Label(parent, text="3. DECODE & PRODUCTS", font=("Segoe UI", 10, "bold"),
                  fg="#003366", bg="white").grid(row=row, column=0, columnspan=4, sticky="w", pady=(0, 6))
         row += 1
 
         btn_frame_top = tk.Frame(parent, bg="white")
         btn_frame_top.grid(row=row, column=0, columnspan=4, sticky="ew")
-        self._make_flow_btn(btn_frame_top, "Install deps", self._install_deps)
-        self._make_flow_btn(btn_frame_top, "Save settings", lambda: save_settings(self))
+        self._make_flow_btn(btn_frame_top, "Install libraries", self._install_deps)
         btn_frame_top.bind("<Configure>", lambda e: self._reflow_buttons(btn_frame_top))
         row += 1
 
@@ -789,7 +788,7 @@ class ArgoDecoderApp:
         save_settings(self)
         r = self._get_root()
         if not r or not Path(r).exists():
-            self.log("ERROR: root folder not found")
+            self.log("ERROR: working folder not found")
             return
         self.log(f"Decoding (decoder_id={self.decoder_id})...")
         self._run_script("decode_sbd_batch.py", [
@@ -830,7 +829,7 @@ class ArgoDecoderApp:
         save_settings(self)
         r = self._get_root()
         if not r or not Path(r).exists():
-            self.log("ERROR: root folder not found")
+            self.log("ERROR: working folder not found")
             return
         o = str(Path(r) / "products")
         im = self.var_imei.get()
