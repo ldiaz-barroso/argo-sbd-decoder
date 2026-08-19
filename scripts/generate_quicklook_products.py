@@ -905,7 +905,6 @@ def load_positions(root: Path, technical_csv: str, imei: str = "") -> pd.DataFra
                             "LONGITUDE": lon_val,
                             "RECORD_TYPE": "profile" if cycle_num > 0 else "gps_surface_only",
                             "HAS_PROFILE": cycle_num > 0,
-                            "SOURCE_COLUMN_INDEX": row_idx,
                         })
 
                     if flat_rows:
