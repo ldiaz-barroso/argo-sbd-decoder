@@ -108,7 +108,7 @@ On Linux, install `python3-tk` if not present. On macOS, `brew install python-tk
   <a href="https://www.euro-argo.eu/EU-Projects/Euro-Argo-ONE-2025-2027"><img src="./assets/logo_euro_argo_one.png" height="80" alt="Euro-Argo ONE"></a>
 </p>
 
-This software was developed under the Euro-Argo ONE project. This project has received funding from the European Union's Horizon Europe Framework Programme for Research and Innovation (2021-2027) under Grant Agreement No. 101188133. Call HORIZON-INFRA-2024-DEV-01-03.
+This software was developed under the Euro-Argo ONE project. This project has received funding from the European Union, Horizon Europe - the Framework Programme for Research and Innovation (2021 to 2027) under Grant Agreement No. 101188133. Call HORIZON-INFRA-2024-DEV-01-03 - Consolidation of the RI landscape - Individual support for evolution, long term sustainability and emerging needs of pan-European research infrastructures.
 
 ## License
 
