@@ -1379,24 +1379,14 @@ def plot_section_one(profiles: pd.DataFrame, pos: pd.DataFrame | None, outdir: P
         print(f"SECTION_SKIPPED_{label}=at least two valid profile dates are required")
         return
 
-    # Matplotlib date numbers remain numeric, so pcolormesh and contour can use
-    # them directly while the axis is formatted as calendar dates.
-    x = mdates.date2num(np.array(profile_times.dt.to_pydatetime()))
-    x_label = "Date"
+    # Use profile index as X axis for uniform spacing (avoids compression
+    # when many profiles occur in a short time period).
+    x = np.arange(len(profile_ids), dtype=float)
+    x_label = "Profile"
     X, Y = np.meshgrid(x, pgrid)
 
     tvals = temp.to_numpy(float)
     svals = psal.to_numpy(float)
-
-    # Do not imply continuity across long temporal gaps. Columns following a
-    # gap greater than three times the median cycle interval are masked.
-    dt_days = np.diff(x)
-    finite_dt = dt_days[np.isfinite(dt_days) & (dt_days > 0)]
-    if finite_dt.size:
-        gap_limit = max(3.0 * float(np.median(finite_dt)), 1.0)
-        gap_cols = np.where(dt_days > gap_limit)[0] + 1
-        tvals[:, gap_cols] = np.nan
-        svals[:, gap_cols] = np.nan
 
     tmin, tmax = get_limits(tvals, pad_frac=0.02, nice=0.5)
     smin, smax = get_limits(svals, pad_frac=0.02, nice=0.1)
@@ -1456,13 +1446,11 @@ def plot_section_one(profiles: pd.DataFrame, pos: pd.DataFrame | None, outdir: P
                     ax.fill_between(x[valid], bottom_plot[valid], max_pres, color="0.3", alpha=0.22, zorder=5)
                     ax.plot(x[valid], bottom_plot[valid], color="k", linewidth=0.8, zorder=6)
 
-    n_ticks=min(8,len(profile_ids))
+    n_ticks=min(12,len(profile_ids))
     tick_idx=np.unique(np.linspace(0,len(profile_ids)-1,n_ticks).round().astype(int))
     axes[1].set_xticks(x[tick_idx])
-    axes[1].xaxis_date()
-    axes[1].xaxis.set_major_formatter(mdates.DateFormatter("%d-%b-%Y"))
     axes[1].set_xticklabels(
-        [pd.Timestamp(profile_times.iloc[i]).strftime("%d-%b-%Y") for i in tick_idx],
+        [pd.Timestamp(profile_times.iloc[i]).strftime("%d-%b-%Y") if pd.notna(profile_times.iloc[i]) else "" for i in tick_idx],
         rotation=45,
         ha="right",
     )
