@@ -58,8 +58,6 @@ In the EOL validation, the float transmitted a GPS fix every ~2 minutes while dr
 
 The prediction is most reliable after two consecutive GPS fixes of the same type. The first prediction after a mode transition (e.g. from profiling to EOL) has higher error because the displacement vector mixes two different drift regimes. Once the float establishes a consistent pattern, accuracy improves significantly.
 
-For deep-ocean floats with long cycles (5–10 days, profiling to 2000–6000 m), prediction accuracy decreases because subsurface currents can differ significantly from surface drift. In such cases, combine predictions with ocean current forecasts (e.g. Copernicus Marine Service).
-
 <p align="center">
   <img src="./assets/prediction_validation.png" width="100%" alt="Position prediction validation">
 </p>
