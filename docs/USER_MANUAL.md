@@ -334,12 +334,12 @@ Download the GEBCO 2024 grid from https://www.gebco.net (NetCDF format) and set 
 
 ## Credits and references
 
-**Decoder:** Python translation of the Coriolis data processing chain for Argo floats (version 085h).
-> Rannou, J.-P. (Coriolis/Ifremer). DOI: [10.17882/45589](https://doi.org/10.17882/45589)
+**Decoder:** Python translation of the Coriolis data processing chain for Argo floats.
+> Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). Coriolis Argo floats data processing chain. SEANOE. https://doi.org/10.17882/45589
 
-**Application:** Developed by the Balearic Islands Coastal Observing and Forecasting System (SOCIB) - https://www.socib.es
+**Application:** Developed by SOCIB and IEO-CSIC.
 
-**Funding:** European Union Horizon Europe Research and Innovation Programme, Grant Agreement No. 101188133 (Euro-Argo ONE).
+**Funding:** This software has received funding from the Euro-Argo ONE project (Grant Agreement No. 101188133).
 
 ---
 

@@ -27,8 +27,6 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 
 Total: **87 decoder IDs, 9 decoder classes, 5 platforms**.
 
-This covers all Argo floats with Iridium SBD transmission listed in the official Coriolis `_CoriolisArgoFloatVersions.xlsx`.
-
 ## Supported platforms
 
 | OS | Interface | Requirements |
@@ -250,9 +248,7 @@ Argo_SBD_Decoder_Products/
 
 The SBD decoder is a Python translation of the **Coriolis data processing chain for Argo floats**:
 
-> Rannou, J.-P. (Coriolis/Ifremer). *Coriolis data processing chain for Argo floats.* DOI: [10.17882/45589](https://doi.org/10.17882/45589)
-
-Source: https://github.com/euroargodev/Coriolis-data-processing-chain-for-Argo-floats (version 085h, 2026-07-10).
+> Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). Coriolis Argo floats data processing chain. SEANOE. https://doi.org/10.17882/45589
 
 ### Bathymetry
 
@@ -288,7 +284,7 @@ Developed by the **Balearic Islands Coastal Observing and Forecasting System ([S
   <a href="https://www.euro-argo.eu/EU-Projects/Euro-Argo-ONE-2025-2027"><img src="./assets/logo_euro_argo_one.png" height="80" alt="Euro-Argo ONE"></a>
 </p>
 
-This project has received funding from the **European Union's Horizon Europe Research and Innovation Programme** under Grant Agreement No. **101188133** ([Euro-Argo ONE](https://www.euro-argo.eu/EU-Projects/Euro-Argo-ONE-2025-2027)).
+This software has received funding from the **Euro-Argo ONE** project (Grant Agreement No. 101188133).
 
 ## License
 

@@ -5,7 +5,7 @@ Argo SBD Decoder - GUI (tkinter)
 Cross-platform graphical interface.
 Developed by SOCIB and IEO-CSIC.
 Based on the Coriolis Argo data processing chain (DOI: 10.17882/45589).
-Funded by EU Horizon Europe Grant Agreement No. 101188133 (Euro-Argo ONE).
+Funded by the Euro-Argo ONE project (Grant Agreement No. 101188133).
 """
 
 import json
@@ -183,7 +183,7 @@ class ArgoDecoderApp:
         ftr = tk.Frame(self.root, bg="#ebedf0", height=22)
         ftr.pack(fill="x", side="bottom")
         ftr.pack_propagate(False)
-        tk.Label(ftr, text="Developed by SOCIB and IEO-CSIC | Based on the Coriolis Argo decoder (DOI: 10.17882/45589) | EU Horizon Europe Grant Agreement No. 101188133 (Euro-Argo ONE)",
+        tk.Label(ftr, text="Developed by SOCIB and IEO-CSIC | Based on the Coriolis Argo decoder (DOI: 10.17882/45589) | Euro-Argo ONE project (Grant Agreement No. 101188133)",
                  font=("Segoe UI", 7), fg="#6e7680", bg="#ebedf0").pack(side="left", padx=10)
 
         # ─── Main PanedWindow (left | right) ───

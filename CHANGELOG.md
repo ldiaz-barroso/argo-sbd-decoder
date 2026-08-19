@@ -40,7 +40,7 @@ Major rewrite: pure Python decoder replaces NKE proprietary parser.
 - TS diagram, temperature/salinity sections (upper + full depth)
 - CLI launcher for Linux/macOS (`launch.sh`)
 - User manual in English (`docs/USER_MANUAL.md`)
-- Float type selector based on official `_CoriolisArgoFloatVersions.xlsx`
+- Float type selector with firmware version and family name for all supported floats
 
 ### Fixed
 - Sensor conversions verified against Coriolis MATLAB for all decoder groups:

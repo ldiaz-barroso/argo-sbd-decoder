@@ -135,8 +135,8 @@ Use the dropdown to browse all PNG files in the products folder.
 
 **Developed by:** SOCIB and IEO-CSIC
 
-**Based on:** Coriolis Argo decoder by J.-P. Rannou (DOI: 10.17882/45589)
+**Based on:** Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). Coriolis Argo floats data processing chain. SEANOE. https://doi.org/10.17882/45589
 
-**Funded by:** EU Horizon Europe Grant Agreement No. 101188133 (Euro-Argo ONE)
+**Funded by:** Euro-Argo ONE project (Grant Agreement No. 101188133)
 
 ---

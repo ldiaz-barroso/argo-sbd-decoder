@@ -4,7 +4,7 @@
 
 The **Argo SBD Decoder** is an open-source application that downloads, decodes and visualizes data transmitted by Argo profiling floats via Iridium Short Burst Data (SBD). It provides float operators with immediate access to decoded oceanographic profiles and float engineering data — without any proprietary software.
 
-The application is a direct Python translation of the official **Coriolis data processing chain for Argo floats** (Rannou, J.-P., Coriolis/Ifremer, DOI: [10.17882/45589](https://doi.org/10.17882/45589)), ensuring full compatibility with the reference decoder used by the international Argo Data Assembly Centres.
+The application is a direct Python translation of the official **Coriolis data processing chain for Argo floats** (Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). SEANOE. https://doi.org/10.17882/45589), ensuring full compatibility with the reference decoder used by the international Argo Data Assembly Centres.
 
 ## Why does it exist?
 
@@ -71,7 +71,7 @@ Email/IMAP  →  Download SBDs  →  Decode  →  Quick-look products
 
 The decoding algorithms are a faithful translation of the Coriolis MATLAB decoder, the official reference used by all Argo Data Assembly Centres worldwide:
 
-> Rannou, J.-P. (Coriolis/Ifremer). *Coriolis data processing chain for Argo floats.* DOI: [10.17882/45589](https://doi.org/10.17882/45589)
+> Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). Coriolis Argo floats data processing chain. SEANOE. https://doi.org/10.17882/45589
 
 This ensures that:
 - Bit layouts match the manufacturer specifications exactly
@@ -98,7 +98,7 @@ The graphical interface (built with Python tkinter) is identical on all platform
 - **ARVOR-C** (IDs 219, 220) — coastal floats with shallower profiles
 - **PROVOR DO** (IDs 205, 206, 209, 213, 214, 225) — floats with dissolved oxygen sensors
 
-The float type selector in the GUI is based on the official `_CoriolisArgoFloatVersions.xlsx` spreadsheet maintained by Coriolis, showing the exact firmware version and family name.
+The float type selector in the GUI shows the exact firmware version and family name for each supported float.
 
 **Important:** Only Iridium SBD transmission is supported (100-byte fixed frames). Floats using RUDICS or Argos transmission are not covered.
 
@@ -112,11 +112,11 @@ The float type selector in the GUI is based on the official `_CoriolisArgoFloatV
 
 ## Credits
 
-Developed by the **Balearic Islands Coastal Observing and Forecasting System (SOCIB)** within the **Euro-Argo ONE** project.
+Developed by **SOCIB** and **IEO-CSIC** within the **Euro-Argo ONE** project.
 
-Funded by the **European Union's Horizon Europe Research and Innovation Programme** under Grant Agreement **No. 101188133 (Euro-Argo ONE)**.
+This software has received funding from the **Euro-Argo ONE** project (Grant Agreement No. 101188133).
 
-Based on the Coriolis data processing chain for Argo floats by Jean-Philippe Rannou (Capgemini/Ifremer), DOI: [10.17882/45589](https://doi.org/10.17882/45589).
+Based on: Rannou Jean-Philippe, Carval Thierry, Fontaine Laure, Bernard Vincent, Coatanoan Christine (2025). Coriolis Argo floats data processing chain. SEANOE. https://doi.org/10.17882/45589
 
 ## License
 
