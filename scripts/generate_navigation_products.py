@@ -1299,18 +1299,25 @@ def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 
                    marker="X", color="#D32F2F", edgecolor="white", linewidths=1.5,
                    zorder=7, label="Predicted next position")
 
-    # Speed and heading annotation
+    # Info box with last fix info and forecast
     speed = pd.to_numeric(last_row.get("speed_m_per_hour", np.nan), errors="coerce")
     heading = pd.to_numeric(last_row.get("heading_deg", np.nan), errors="coerce")
     info_lines = []
-    if np.isfinite(speed):
-        info_lines.append(f"Speed: {speed:.0f} m/h")
-    if np.isfinite(heading):
-        info_lines.append(f"Heading: {heading:.0f}\u00b0")
-    info_lines.append(f"Position: {last_row['lat']:.6f}, {last_row['lon']:.6f}")
     t_last = pd.to_datetime(last_row.get("timestamp"), errors="coerce")
+    info_lines.append("── Last fix ──")
     if pd.notna(t_last):
-        info_lines.append(f"Last fix: {t_last.strftime('%Y-%m-%d %H:%M UTC')}")
+        info_lines.append(f"  Time: {t_last.strftime('%Y-%m-%d %H:%M UTC')}")
+    info_lines.append(f"  Lat: {last_row['lat']:.6f}")
+    info_lines.append(f"  Lon: {last_row['lon']:.6f}")
+    info_lines.append("")
+    info_lines.append("── Forecast ──")
+    if np.isfinite(speed):
+        info_lines.append(f"  Speed: {speed:.0f} m/h")
+    if np.isfinite(heading):
+        info_lines.append(f"  Heading: {heading:.0f}\u00b0")
+    if has_pred.any():
+        info_lines.append(f"  Pred. lat: {pred_row['predicted_lat']:.6f}")
+        info_lines.append(f"  Pred. lon: {pred_row['predicted_lon']:.6f}")
     if info_lines:
         ax.text(0.02, 0.98, "\n".join(info_lines), transform=ax.transAxes,
                 fontsize=9, verticalalignment="top",
