@@ -256,10 +256,6 @@ GEBCO Compilation Group (2024). *GEBCO 2024 Grid.* DOI: [10.5285/1c44ce99-0a0d-5
 
 Available at: https://www.gebco.net/data_and_products/gridded_bathymetry_data/
 
-### Application
-
-Developed by the **Balearic Islands Coastal Observing and Forecasting System ([SOCIB](https://www.socib.es))** and the **Instituto Espanol de Oceanografia ([IEO-CSIC](https://ieo.csic.es))** within the **Euro-Argo ONE** project.
-
 ### Contributors
 
 - [@ldiaz-barroso](https://github.com/ldiaz-barroso) (SOCIB)
