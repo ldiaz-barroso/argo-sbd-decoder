@@ -8,8 +8,8 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 - Download SBD from any IMAP email provider (Gmail, Outlook, Yahoo, iCloud, custom)
 - Cross-platform: **Linux, macOS, Windows** (GUI + CLI)
 - Generate TS diagrams, temporal sections, trajectory maps and KMZ files
-- **Position prediction for float recovery** — validated median error of 27 m in EOL mode
-- Float health monitoring: internal vacuum, drift speed, range plots
+- **Position prediction for float recovery** — validated median error of 27 m in EOL mode, with recovery zoom map and copy-paste coordinates for vessel operators
+- Float health monitoring: internal vacuum, drift speed, heading, range plots
 
 > **Note:** The decoder covers 87 float types based on the [Coriolis MATLAB decoder](https://doi.org/10.17882/45589). Currently tested and validated with real SBD data for **ARVOR I** and **ARVOR C**. Other float types will be validated as we gain access to their SBD files.
 

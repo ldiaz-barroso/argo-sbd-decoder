@@ -1327,7 +1327,7 @@ def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 
     ax.set_ylabel("Latitude")
     ax.set_title(f"Recovery position - IMEI {imei}" if imei else "Recovery position")
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="lower right", fontsize=8)
+    ax.legend(loc="best", fontsize=8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
@@ -1407,6 +1407,31 @@ def main():
         print(f"RECOVERY_MAP={recovery_png}")
     for p in series_pngs:
         print(f"NAVIGATION_PLOT={p}")
+
+    # Print recovery forecast summary for operators (appears in GUI log for copy-paste)
+    if not df_nav.empty and len(df_nav) >= 2:
+        last = df_nav.iloc[-1]
+        t_last = pd.to_datetime(last.get("timestamp"), errors="coerce")
+        speed_val = pd.to_numeric(last.get("speed_m_per_hour", np.nan), errors="coerce")
+        heading_val = pd.to_numeric(last.get("heading_deg", np.nan), errors="coerce")
+        pred_lat = last.get("predicted_lat", np.nan)
+        pred_lon = last.get("predicted_lon", np.nan)
+
+        print("")
+        print("=" * 50)
+        print("  RECOVERY FORECAST")
+        print("=" * 50)
+        print(f"  Last fix:      {t_last.strftime('%Y-%m-%d %H:%M UTC') if pd.notna(t_last) else 'N/A'}")
+        print(f"  Position:      {last['lat']:.6f}, {last['lon']:.6f}")
+        if np.isfinite(speed_val):
+            print(f"  Drift speed:   {speed_val:.0f} m/h")
+        if np.isfinite(heading_val):
+            print(f"  Heading:       {heading_val:.0f} deg")
+        if np.isfinite(pred_lat) and np.isfinite(pred_lon):
+            print(f"  PREDICTED:     {pred_lat:.6f}, {pred_lon:.6f}")
+        print("=" * 50)
+        print("")
+
     print("NAVIGATION_PRODUCTS_DONE")
 
 
