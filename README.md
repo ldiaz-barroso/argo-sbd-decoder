@@ -8,8 +8,9 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 - Download SBD from any IMAP email provider (Gmail, Outlook, Yahoo, iCloud, custom)
 - Cross-platform: **Linux, macOS, Windows** (GUI + CLI)
 - Generate TS diagrams, temporal sections, trajectory maps and KMZ files
-- **Position prediction for float recovery** — validated median error of 27 m in EOL mode, with recovery zoom map and copy-paste coordinates for vessel operators
-- Float health monitoring: internal vacuum, drift speed, heading, range plots
+- **Position prediction for float recovery**
+  - Recovery zoom map and copy-paste coordinates for vessel operators
+  - Float health monitoring: internal vacuum, drift speed, heading, range plots
 
 <p align="center">
   <img src="./assets/interface_recovery.png" width="100%" alt="Application interface showing recovery forecast">
