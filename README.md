@@ -10,7 +10,7 @@ A cross-platform Python application for downloading, decoding and visualizing Ir
 - Generate TS diagrams, temporal sections, trajectory maps and KMZ files
 - **Position prediction for float recovery**
   - Recovery zoom map and copy-paste coordinates for vessel operators
-  - Float health monitoring: internal vacuum, drift speed, heading, range plots
+  - Float recovery monitoring: internal vacuum, drift speed, heading, range plots
 
 <p align="center">
   <img src="./assets/interface_recovery.png" width="100%" alt="Application interface showing recovery forecast">
@@ -46,10 +46,6 @@ python app/gui.py
 
 The forecast position module includes a position prediction that estimates where the float is headed based on its trajectory. The prediction is an extrapolation of the float's trajectory projected onto the plane from the last two GPS fixes (lat/lon coordinates sent via satellite communications). The displacement vector from the previous fix to the current fix is projected forward from the current position. The prediction was implemented in MATLAB by **Gene Massion (MBARI)** for the recovery of a Coastal Profiling Float (CPF), and the code has been translated to Python and adapted to various types of float telemetry data.
 
-**End-of-Life (EOL) mode:** The float stays at the surface transmitting GPS fixes every few minutes. Surface drift is consistent, so linear extrapolation gives accurate estimates for recovery planning.
-
-**Short-cycle profiling (depth < 500 m):** Floats with cycle times of 12–48 hours also benefit from accurate predictions because the net displacement between surfacings is well captured by the linear model.
-
 ### Validation
 
 Using real recovery data from an ARVOR-C float (Western Mediterranean Sea). Position predictions began being transmitted to vessel operators at 07:45 UTC; by 08:20 UTC the float had been recovered.
@@ -61,7 +57,7 @@ Using real recovery data from an ARVOR-C float (Western Mediterranean Sea). Posi
 
 In the EOL validation, the float transmitted a GPS fix every ~2 minutes while drifting at the surface. In profiling mode, fixes were separated by ~24 hours (one dive cycle).
 
-The prediction is most reliable after two consecutive GPS fixes of the same type. The first prediction after a mode transition (e.g. from profiling to EOL) has higher error because the displacement vector mixes two different drift regimes. Once the float establishes a consistent pattern, accuracy improves significantly.
+The prediction is most reliable after two consecutive GPS fixes of the same type, as mode transitions mix different drift regimes.
 
 <p align="center">
   <img src="./assets/prediction_validation.png" width="100%" alt="Position prediction validation">
