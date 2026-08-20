@@ -555,9 +555,10 @@ class ArgoDecoderApp:
     # ─── Actions ───
     def log(self, msg: str):
         tag = None
-        if "RECOVERY FORECAST" in msg or "GO TO" in msg or ">>>" in msg:
-            tag = "recovery"
-        elif msg.strip().startswith("===") or msg.strip().startswith("---"):
+        # Highlight the entire recovery forecast block
+        if any(kw in msg for kw in ["RECOVERY FORECAST", "GO TO", ">>>",
+                                     "Drift speed", "Heading:", "Last known fix",
+                                     "Pred. lat", "Pred. lon"]):
             tag = "recovery"
 
         if tag:
