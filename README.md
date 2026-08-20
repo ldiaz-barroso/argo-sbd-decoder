@@ -39,7 +39,7 @@ python app/gui.py
 
 ## Position Prediction (Recovery Support)
 
-The application estimates where the float will surface next using linear extrapolation of the last two GPS fixes. Method suggested by **Gene Massion (MBARI)**.
+The forecast position module includes a position prediction that estimates where the float is headed based on its trajectory. The prediction is an extrapolation of the float's trajectory projected onto the plane from the last two GPS fixes (lat/lon coordinates sent via satellite communications). The displacement vector from the previous fix to the current fix is projected forward from the current position. The prediction was implemented in MATLAB by **Gene Massion (MBARI)** for the recovery of a Coastal Profiling Float (CPF), and the code has been translated to Python and adapted to various types of float telemetry data.
 
 **End-of-Life (EOL) mode:** The float stays at the surface transmitting GPS fixes every few minutes. Surface drift is consistent, so linear extrapolation gives accurate estimates for recovery planning.
 
