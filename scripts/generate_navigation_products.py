@@ -1327,7 +1327,7 @@ def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 
     ax.set_ylabel("Latitude")
     ax.set_title(f"Recovery position - IMEI {imei}" if imei else "Recovery position")
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="best", fontsize=8)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=2, fontsize=8, frameon=False)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 

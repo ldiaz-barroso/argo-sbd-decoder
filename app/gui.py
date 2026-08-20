@@ -239,6 +239,8 @@ class ArgoDecoderApp:
         self.txt_log = tk.Text(log_frame, height=8, font=("Consolas", 9),
                                bg="#fafbfc", fg="#222222", relief="flat", wrap="word")
         self.txt_log.pack(fill="both", expand=True, padx=10, pady=(2, 8))
+        self.txt_log.tag_configure("recovery", background="#d4edda", foreground="#155724",
+                                   font=("Consolas", 10, "bold"))
 
         # ─── Preview panel (right) ───
         self._build_preview(right_frame)
@@ -552,7 +554,16 @@ class ArgoDecoderApp:
 
     # ─── Actions ───
     def log(self, msg: str):
-        self.txt_log.insert("end", f"[{self._time()}] {msg}\n")
+        tag = None
+        if "RECOVERY FORECAST" in msg or "GO TO" in msg or ">>>" in msg:
+            tag = "recovery"
+        elif msg.strip().startswith("===") or msg.strip().startswith("---"):
+            tag = "recovery"
+
+        if tag:
+            self.txt_log.insert("end", f"[{self._time()}] {msg}\n", tag)
+        else:
+            self.txt_log.insert("end", f"[{self._time()}] {msg}\n")
         self.txt_log.see("end")
 
     def _time(self):
