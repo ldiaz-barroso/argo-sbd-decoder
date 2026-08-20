@@ -556,9 +556,13 @@ class ArgoDecoderApp:
     def log(self, msg: str):
         tag = None
         # Highlight the entire recovery forecast block
+        stripped = msg.strip()
         if any(kw in msg for kw in ["RECOVERY FORECAST", "GO TO", ">>>",
                                      "Drift speed", "Heading:", "Last known fix",
                                      "Pred. lat", "Pred. lon"]):
+            tag = "recovery"
+        elif stripped and stripped[0].isdigit() and "," in stripped and stripped.count(".") >= 2:
+            # Looks like a coordinate line (e.g. "38.884665, 3.570367")
             tag = "recovery"
 
         if tag:

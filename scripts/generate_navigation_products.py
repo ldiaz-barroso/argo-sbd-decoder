@@ -1319,9 +1319,11 @@ def plot_recovery_zoom(df: pd.DataFrame, outdir: Path, imei: str, n_last: int = 
         info_lines.append(f"  Pred. lat: {pred_row['predicted_lat']:.6f}")
         info_lines.append(f"  Pred. lon: {pred_row['predicted_lon']:.6f}")
     if info_lines:
-        ax.text(0.02, 0.98, "\n".join(info_lines), transform=ax.transAxes,
-                fontsize=9, verticalalignment="top",
-                bbox=dict(boxstyle="round,pad=0.4", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
+        # Place info box outside the plot, on the right margin
+        fig.subplots_adjust(right=0.72)
+        fig.text(0.74, 0.85, "\n".join(info_lines), fontsize=8, fontfamily="monospace",
+                 verticalalignment="top",
+                 bbox=dict(boxstyle="round,pad=0.5", facecolor="#f8f9fa", edgecolor="#cccccc"))
 
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
