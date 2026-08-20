@@ -1419,16 +1419,21 @@ def main():
 
         print("")
         print("=" * 50)
-        print("  RECOVERY FORECAST")
+        if np.isfinite(pred_lat) and np.isfinite(pred_lon):
+            print("  RECOVERY FORECAST - GO TO:")
+            print(f"  >>> {pred_lat:.6f}, {pred_lon:.6f} <<<")
+        else:
+            print("  RECOVERY FORECAST")
+            print("  (no prediction available)")
         print("=" * 50)
-        print(f"  Last fix:      {t_last.strftime('%Y-%m-%d %H:%M UTC') if pd.notna(t_last) else 'N/A'}")
-        print(f"  Position:      {last['lat']:.6f}, {last['lon']:.6f}")
         if np.isfinite(speed_val):
             print(f"  Drift speed:   {speed_val:.0f} m/h")
         if np.isfinite(heading_val):
             print(f"  Heading:       {heading_val:.0f} deg")
-        if np.isfinite(pred_lat) and np.isfinite(pred_lon):
-            print(f"  PREDICTED:     {pred_lat:.6f}, {pred_lon:.6f}")
+        print("-" * 50)
+        time_str = t_last.strftime('%Y-%m-%d %H:%M UTC') if pd.notna(t_last) else 'N/A'
+        print(f"  Last known fix ({time_str}):")
+        print(f"  {last['lat']:.6f}, {last['lon']:.6f}")
         print("=" * 50)
         print("")
 
