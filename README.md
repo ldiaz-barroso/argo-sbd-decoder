@@ -55,7 +55,7 @@ Using real recovery data from an ARVOR-C float (Western Mediterranean Sea). Posi
 | **EOL** | 10 | **27 m** | 31 m | 66 m |
 | **Profiling** | 29 | **263 m** | 345 m | 829 m |
 
-In the EOL validation, the float transmitted a GPS fix every ~2 minutes while drifting at the surface. In profiling mode, fixes were separated by ~24 hours (one dive cycle).
+In the EOL (End-of-Life) validation, the float remains at the surface drifting and transmitting a GPS fix every ~2 minutes. In profiling mode, fixes were separated by ~24 hours (one dive cycle).
 
 The prediction is most reliable after two consecutive GPS fixes of the same type, as mode transitions mix different drift regimes.
 
