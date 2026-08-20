@@ -48,14 +48,17 @@ The forecast position module includes a position prediction that estimates where
 
 ### Validation
 
-Using real recovery data from an ARVOR-C float (Western Mediterranean Sea). Position predictions began being transmitted to vessel operators at 07:45 UTC; by 08:20 UTC the float had been recovered.
+The prediction was validated using real recovery data from an ARVOR-C float in the Western Mediterranean Sea. Two operational modes were evaluated:
+
+- **EOL (End-of-Life):** The float has finished its mission and remains at the surface, drifting and transmitting GPS fixes every ~2 minutes. This is the typical recovery scenario.
+- **Profiling:** The float is still diving (~24 h cycles, depth < 500 m). Predictions are less accurate because subsurface displacement between fixes is not captured.
+
+Position predictions began being transmitted to vessel operators at 07:45 UTC; by 08:20 UTC the float had been recovered.
 
 | Mode | N predictions | Median error | Mean error | Max |
 |------|--------------|-------------|------------|-----|
 | **EOL** | 10 | **27 m** | 31 m | 66 m |
 | **Profiling** | 29 | **263 m** | 345 m | 829 m |
-
-In the EOL (End-of-Life) validation, the float remains at the surface drifting and transmitting a GPS fix every ~2 minutes. In profiling mode, fixes were separated by ~24 hours (one dive cycle).
 
 The prediction is most reliable after two consecutive GPS fixes of the same type, as mode transitions mix different drift regimes.
 
