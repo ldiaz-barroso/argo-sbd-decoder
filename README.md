@@ -67,8 +67,8 @@ The prediction is most reliable after two consecutive GPS fixes of the same type
 
 | Mode | N predictions | Median error | Mean error | Max |
 |------|--------------|-------------|------------|-----|
-| Profiling | 29 | 263 m | 345 m | 829 m |
-| EOL | 10 | 27 m | 31 m | 66 m |
+| Profiling | 29 | 249 m | 331 m | 829 m |
+| EOL | 11 | 24 m | 30 m | 66 m |
 
 <p align="center">
   <img src="./assets/prediction_validation.png" width="100%" alt="Position prediction validation">
