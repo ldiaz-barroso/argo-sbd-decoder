@@ -11,13 +11,16 @@ Python application for downloading, decoding, and visualizing Iridium Short Burs
   - Trajectory maps with optional GEBCO bathymetry.
   - T–S diagrams.
   - Vertical sections (depth vs. time) of sensor data.
-  - KMZ files for visualization in Google Earth.
 - Navigation module for recovery operations, providing:
   - Heading, drift speed, and geographic coordinates for vessel operators.
   - Float health monitoring plots, including internal vacuum and battery voltage with reference thresholds.
   - KMZ files for visualizing the predicted float position in Google Earth.
 
 > **Note:** The SBD decoder is based on the Coriolis MATLAB decoder (Rannou et al., 2025), covering SBDs from 87 float types. Currently tested and validated with real SBD data for ARVOR I and ARVOR C floats (nke Instrumentation). Other float types will be validated as we gain access to the SBD files.
+
+<p align="center">
+  <img src="./assets/interface_recovery.png" width="100%" alt="Application interface showing recovery forecast">
+</p>
 
 ## Supported float families
 
