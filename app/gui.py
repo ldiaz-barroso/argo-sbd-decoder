@@ -303,6 +303,7 @@ class ArgoDecoderApp:
             "Outlook / Hotmail": {"server": "outlook.office365.com", "port": 993, "folder": "INBOX"},
             "Yahoo": {"server": "imap.mail.yahoo.com", "port": 993, "folder": "INBOX"},
             "iCloud": {"server": "imap.mail.me.com", "port": 993, "folder": "INBOX"},
+            "GMX": {"server": "imap.gmx.com", "port": 993, "folder": "INBOX"},
             "Other": {"server": "", "port": 993, "folder": "INBOX"},
         }
         self.var_provider = tk.StringVar(value=self._detect_provider(s))
@@ -471,6 +472,7 @@ class ArgoDecoderApp:
             "Outlook / Hotmail": "outlook.office365.com",
             "Yahoo": "imap.mail.yahoo.com",
             "iCloud": "imap.mail.me.com",
+            "GMX": "imap.gmx.com",
         }.items():
             if info in server:
                 return name
