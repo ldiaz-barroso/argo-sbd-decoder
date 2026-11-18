@@ -54,6 +54,72 @@ def select_mailbox(imap, label: str) -> str:
     raise RuntimeError(f"cannot select IMAP label {label!r}: {last_error}")
 
 
+def list_all_folders(imap) -> list[str]:
+    """Return all selectable IMAP folder names in the mailbox."""
+    folders = []
+    try:
+        typ, data = imap.list()
+        if typ != "OK":
+            return folders
+        for item in data:
+            if item is None:
+                continue
+            decoded = item.decode("utf-8", errors="replace") if isinstance(item, bytes) else str(item)
+            # IMAP LIST response format: (\Flags) "delimiter" "FolderName"
+            # Extract the folder name after the last quote or space
+            parts = decoded.split('"')
+            if len(parts) >= 2:
+                name = parts[-1].strip().strip('"')
+            else:
+                name = decoded.rsplit(" ", 1)[-1].strip().strip('"')
+            if name:
+                folders.append(name)
+    except Exception as e:
+        print(f"LIST_FOLDERS_ERROR: {e}")
+    return folders
+
+
+def search_all_folders(imap, since_imap: str, before_imap: str, imei: str,
+                        fromaddr: str, pwd: str, email_addr: str,
+                        imap_server: str, imap_port: int) -> tuple[list, str]:
+    """
+    Search every folder in the mailbox and return (msg_ids, folder_name)
+    for the first folder that has matching messages.
+    """
+    folders = list_all_folders(imap)
+    print(f"ALL_FOLDERS_FOUND={len(folders)}: {folders}")
+
+    # Prioritize likely folders first
+    priority = ["iridium", "sbd", "inbox"]
+    folders_sorted = sorted(
+        folders,
+        key=lambda f: next((i for i, p in enumerate(priority) if p in f.lower()), 99)
+    )
+
+    for folder in folders_sorted:
+        quoted = f'"{folder}"' if " " in folder else folder
+        try:
+            typ, _ = imap.select(quoted)
+            if typ != "OK":
+                continue
+        except Exception:
+            continue
+
+        # Quick search: dates + subject only (fastest)
+        criteria = [f'SINCE "{since_imap}"', f'BEFORE "{before_imap}"',
+                    f'SUBJECT "{imei}"']
+        try:
+            ids, _ = run_search(imap, criteria)
+        except Exception:
+            ids = []
+
+        if ids:
+            print(f"FOUND_IN_FOLDER={folder} count={len(ids)}")
+            return ids, folder
+
+    return [], ""
+
+
 def diagnostic_searches(imap, since_imap: str, before_imap: str, imei: str, fromaddr: str):
     date_parts = [f'SINCE "{since_imap}"', f'BEFORE "{before_imap}"']
 
@@ -143,6 +209,28 @@ def main() -> None:
 
         print(f"SEARCH_MODE_USED={search_mode}")
         print(f"FOUND_MESSAGES={len(msg_ids)}")
+
+        # If nothing found in the configured folder, search every folder
+        if not msg_ids:
+            print("NO_MESSAGES_IN_CONFIGURED_FOLDER — searching all folders...")
+            msg_ids, found_folder = search_all_folders(
+                imap,
+                since_imap=since_imap,
+                before_imap=before_imap,
+                imei=args.imei,
+                fromaddr=args.fromaddr,
+                pwd=pwd,
+                email_addr=args.email,
+                imap_server=args.imap_server,
+                imap_port=args.imap_port,
+            )
+            if msg_ids:
+                search_mode = f"all_folders_found_in={found_folder}"
+                print(f"SEARCH_MODE_USED={search_mode}")
+                print(f"FOUND_MESSAGES={len(msg_ids)}")
+            else:
+                print("FOUND_MESSAGES=0 (searched all folders)")
+
         downloaded = 0
 
         def reconnect_imap():
