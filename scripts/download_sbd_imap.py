@@ -210,9 +210,16 @@ def main() -> None:
         print(f"SEARCH_MODE_USED={search_mode}")
         print(f"FOUND_MESSAGES={len(msg_ids)}")
 
-        # If nothing found in the configured folder, search every folder
-        if not msg_ids:
-            print("NO_MESSAGES_IN_CONFIGURED_FOLDER — searching all folders...")
+        # Always search all folders when the best query that includes the IMEI
+        # (dates_plus_subject or dates_plus_from_plus_subject) returned nothing.
+        # This handles providers like GMX that file SBDs in a custom folder
+        # (e.g. "Iridium") and have unrelated messages in INBOX.
+        imei_specific = (
+            diagnostic.get("dates_plus_from_plus_subject", []) or
+            diagnostic.get("dates_plus_subject", [])
+        )
+        if not imei_specific:
+            print("NO_IMEI_MATCH_IN_CONFIGURED_FOLDER — searching all folders...")
             msg_ids, found_folder = search_all_folders(
                 imap,
                 since_imap=since_imap,
