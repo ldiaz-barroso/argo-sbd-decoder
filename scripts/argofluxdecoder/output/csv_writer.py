@@ -38,6 +38,10 @@ def write_technical_csv(cycles: List[DecodedCycle], outdir: Path, filename: str 
             "Latitude", "Longitude",
             "GPS valid", "Pressure offset (dbar)",
             "Internal pressure (mbar)",
+            "Internal temperature (degC)",
+            "Descent speed (mBar/sec)",
+            "Ascent speed (mBar/sec)",
+            "Battery voltage at Pmax (V)",
             "Has profile",
             "SBD file",
         ])
@@ -54,13 +58,25 @@ def write_technical_csv(cycles: List[DecodedCycle], outdir: Path, filename: str 
                     min_str = str(gps.date.minute) if gps.date else ""
                     sec_str = str(gps.date.second) if gps.date else ""
 
-                    # Get internal pressure from technical data if available
+                    # Get internal pressure, temperature, speeds and battery from technical data
                     int_pres = ""
+                    int_temp = ""
+                    desc_speed = ""
+                    asc_speed = ""
+                    battery = ""
                     pres_offset = ""
                     for tech in cycle.technical:
                         d = tech.data
                         if d.get("internal_pressure_mbar"):
                             int_pres = _fmt(d["internal_pressure_mbar"])
+                        if d.get("internal_temperature_degC"):
+                            int_temp = _fmt(d["internal_temperature_degC"])
+                        if d.get("descent_speed_mbar_sec"):
+                            desc_speed = _fmt(d["descent_speed_mbar_sec"])
+                        if d.get("ascent_speed_mbar_sec"):
+                            asc_speed = _fmt(d["ascent_speed_mbar_sec"])
+                        if d.get("battery_voltage_drop_at_pmax"):
+                            battery = _fmt(d["battery_voltage_drop_at_pmax"])
                         if d.get("pressure_offset"):
                             pres_offset = _fmt(d["pressure_offset"])
 
@@ -81,6 +97,10 @@ def write_technical_csv(cycles: List[DecodedCycle], outdir: Path, filename: str 
                         1 if gps.valid else 0,
                         pres_offset,
                         int_pres,
+                        int_temp,
+                        desc_speed,
+                        asc_speed,
+                        battery,
                         1 if cycle_has_profile else 0,
                         sbd_file,
                     ])
@@ -108,6 +128,10 @@ def write_technical_csv(cycles: List[DecodedCycle], outdir: Path, filename: str 
                         1 if d.get("gps_valid") else 0,
                         _fmt(d.get("pressure_offset")),
                         _fmt(d.get("internal_pressure_mbar")),
+                        _fmt(d.get("internal_temperature_degC")),
+                        _fmt(d.get("descent_speed_mbar_sec")),
+                        _fmt(d.get("ascent_speed_mbar_sec")),
+                        _fmt(d.get("battery_voltage_drop_at_pmax")),
                         1 if cycle_has_profile else 0,
                         d.get("sbd_file", ""),
                     ])

@@ -99,6 +99,66 @@ def _is_data_column(series: pd.Series) -> bool:
     return len(nonzero) >= 2
 
 
+def _extract_sbd_dates(base_dir: Path) -> list[str]:
+    """
+    Return one YYYYMMDD date per cycle, extracted from SBD filenames.
+    Groups consecutive SBDs by date and returns one date per group,
+    matching the number of real data cycles in the Technical Message.
+    """
+    sbd_dir = base_dir / "sbd_raw"
+    if not sbd_dir.exists():
+        sbd_dir = base_dir
+
+    # Collect all dates in order (one per file)
+    all_dates = []
+    for f in sorted(sbd_dir.glob("*.sbd")):
+        part = f.stem.split("_")[0]
+        if len(part) == 8 and part.isdigit():
+            all_dates.append(part)
+
+    if not all_dates:
+        return []
+
+    # Group by consecutive runs of same date, but also detect
+    # when the MOMSN (second field) resets — that indicates a new cycle group.
+    # Simpler: group files into blocks of equal size (files_per_cycle).
+    # We detect the block size from the most common count per date.
+    from collections import Counter
+    date_counts = Counter(all_dates)
+    # Most common count per unique date = files per cycle
+    files_per_cycle = Counter(date_counts.values()).most_common(1)[0][0]
+
+    # Build one date per cycle by stepping through all_dates in blocks
+    cycle_dates = []
+    prev_date = None
+    block_count = 0
+
+    for date in all_dates:
+        if date != prev_date:
+            if prev_date is not None and block_count >= files_per_cycle:
+                # New date group starts — previous block was a full cycle
+                cycle_dates.append(prev_date)
+                block_count = 0
+            elif prev_date is None:
+                block_count = 0
+        block_count += 1
+        prev_date = date
+
+    # Last block
+    if prev_date is not None:
+        cycle_dates.append(prev_date)
+
+    # If grouping failed, fall back to unique dates in order
+    if not cycle_dates:
+        seen = set()
+        for d in all_dates:
+            if d not in seen:
+                seen.add(d)
+                cycle_dates.append(d)
+
+    return cycle_dates
+
+
 def load_csv(csv_path: Path) -> pd.DataFrame:
     """
     Read the NKE Technical Message CSV and return a tidy DataFrame with
@@ -155,8 +215,15 @@ def load_csv(csv_path: Path) -> pd.DataFrame:
 
     records = []
     for i, col in enumerate(data_col_indices):
+        # Try to get a date string for this cycle from SBD filenames
+        sbd_dates = _extract_sbd_dates(csv_path.parent.parent
+                                       if csv_path.parent.name == "sbd_raw"
+                                       else csv_path.parent)
+        cycle_date = sbd_dates[i] if i < len(sbd_dates) else ""
+
         records.append({
-            "cycle_col":          i + 1,           # 1-based cycle index
+            "cycle_col":          i + 1,
+            "cycle_date":         cycle_date,
 
             # Timing (minutes)
             "cycle_start":        get_param("Cycle start time (min)",        col),
@@ -271,6 +338,11 @@ def plot_timeline(cycles: pd.DataFrame, out_path: Path) -> None:
     """
     Gantt-style chart: ascending (green) / surface (blue) / descending (orange).
     Time axis is relative to ascent_start of each cycle.
+    Annotations:
+      - Ascent speed (m/s) centred on the green bar
+      - Descent speed (m/s) centred on the orange bar
+      - Grounding pressure (cBar) at the start of the orange bar (above)
+      - ΔP below the bar (existing)
     """
     pc = cycles.copy()
     pc["t_ascent_start"]   = 0
@@ -301,11 +373,11 @@ def plot_timeline(cycles: pd.DataFrame, out_path: Path) -> None:
         "descending": "tab:orange",
     }
 
-    fig, ax = plt.subplots(figsize=(14, max(5, 0.55 * len(valid))))
+    fig, ax = plt.subplots(figsize=(14, max(5, 0.65 * len(valid))))
     y = np.arange(len(valid))
 
     for i, row in valid.iterrows():
-        # Phase bars
+        # ── Phase bars ────────────────────────────────────────────────────
         ax.plot(
             [row["t_ascent_start"],  row["t_end_ascent"]],
             [i, i], linewidth=10, color=colors["ascending"],  solid_capstyle="butt",
@@ -319,14 +391,49 @@ def plot_timeline(cycles: pd.DataFrame, out_path: Path) -> None:
             [i, i], linewidth=10, color=colors["descending"], solid_capstyle="butt",
         )
 
-        # Event markers (above bar)
+        # ── Ascent speed label (centre of green bar) ──────────────────────
+        asc_speed = row.get("real_ascent_speed", np.nan)
+        if pd.notna(asc_speed) and asc_speed > 0:
+            t_mid_asc = (row["t_ascent_start"] + row["t_end_ascent"]) / 2
+            ax.text(
+                t_mid_asc, i,
+                f"{asc_speed:.3f} m/s",
+                fontsize=7.5, ha="center", va="center",
+                color="white", fontweight="bold",
+                zorder=6,
+            )
+
+        # ── Descent speed label (centre of orange bar) ────────────────────
+        desc_speed = row.get("real_descent_speed", np.nan)
+        if pd.notna(desc_speed) and desc_speed > 0:
+            t_mid_desc = (row["t_descent_start"] + row["t_end_descent"]) / 2
+            ax.text(
+                t_mid_desc, i,
+                f"{desc_speed:.3f} m/s",
+                fontsize=7.5, ha="center", va="center",
+                color="white", fontweight="bold",
+                zorder=6,
+            )
+
+        # ── Grounding pressure label (above bar, at descent start) ────────
+        gp = row.get("grounding_pressure", np.nan)
+        if pd.notna(gp) and gp > 0:
+            ax.text(
+                row["t_descent_start"], i + 0.38,
+                f"{gp:.0f} cBar",
+                fontsize=7.5, ha="center", va="bottom",
+                color="darkorange", fontweight="bold",
+                zorder=6,
+            )
+
+        # ── Event markers (above bar) ─────────────────────────────────────
         ye = i + 0.18
         ax.scatter(row["t_end_ascent"],    ye, color="black", s=70, marker="o", zorder=5)
         ax.scatter(row["t_tx_start"],      ye, color="black", s=80, marker="^", zorder=5)
         ax.scatter(row["t_cycle_start"],   ye, color="black", s=80, marker="s", zorder=5)
         ax.scatter(row["t_descent_start"], ye, color="black", s=80, marker="v", zorder=5)
 
-        # ΔP annotation (below bar)
+        # ── ΔP annotation (below bar) ─────────────────────────────────────
         dp = row.get("max_minus_grounding", np.nan)
         if pd.notna(dp):
             ax.text(
@@ -336,12 +443,24 @@ def plot_timeline(cycles: pd.DataFrame, out_path: Path) -> None:
             )
 
     ax.set_yticks(y)
-    ax.set_yticklabels([f"Cycle {int(r['cycle_col'])}" for _, r in valid.iterrows()])
+    # Use date if available, otherwise fall back to cycle number
+    ylabels = []
+    for _, r in valid.iterrows():
+        date = str(r.get("cycle_date", "")).strip()
+        if date and date != "nan":
+            try:
+                from datetime import datetime as _dt
+                ylabels.append(_dt.strptime(date, "%Y%m%d").strftime("%d %b %Y"))
+            except ValueError:
+                ylabels.append(date)
+        else:
+            ylabels.append(f"Cycle {int(r['cycle_col'])}")
+    ax.set_yticklabels(ylabels)
     ax.set_xlabel("Time since ascent start (min)")
-    ax.set_ylabel("Cycle")
+    ax.set_ylabel("Date")
     ax.set_title("Float cycle timeline: ascent start → end of descent")
     ax.grid(axis="x", alpha=0.3)
-    ax.set_ylim(-0.6, len(valid) - 0.2)
+    ax.set_ylim(-0.7, len(valid) - 0.1)
 
     phase_leg = [
         mpatches.Patch(color=colors["ascending"],  label="Ascending"),
@@ -404,6 +523,7 @@ def run(
     # Save summary CSV
     summary_cols = [
         "cycle_col",
+        "cycle_date",
         "ascending_duration", "surface_duration", "descending_duration",
         "observable_cycle_duration",
         "surface_to_transmission", "surface_to_cycle_start",
@@ -415,6 +535,29 @@ def run(
         "has_negative_duration",
     ]
     summary = cycles[[c for c in summary_cols if c in cycles.columns]].round(3)
+
+    # Rename columns to match Technical Message label conventions (with units)
+    summary = summary.rename(columns={
+        "cycle_col":                    "Cycle",
+        "cycle_date":                   "Date",
+        "ascending_duration":           "Ascending duration (min)",
+        "surface_duration":             "Surface duration (min)",
+        "descending_duration":          "Descending duration (min)",
+        "observable_cycle_duration":    "Observable cycle duration (min)",
+        "surface_to_transmission":      "Surface to transmission start (min)",
+        "surface_to_cycle_start":       "Surface to cycle start (min)",
+        "transmission_to_cycle_start":  "Transmission to cycle start (min)",
+        "cycle_start_to_descent":       "Cycle start to descent (min)",
+        "grounding_pressure":           "Grounding pressure (cBar)",
+        "min_pressure_drift":           "Min pressure in drift (cBar)",
+        "max_pressure_drift":           "Max pressure in drift (cBar)",
+        "max_minus_grounding":          "Max pressure minus grounding (cBar)",
+        "internal_pressure":            "Internal pressure (mbar)",
+        "real_ascent_speed":            "Calculated ascent speed (m/s)",
+        "real_descent_speed":           "Calculated descent speed (m/s)",
+        "has_negative_duration":        "Has negative duration",
+    })
+
     csv_out = outdir / "cycle_summary.csv"
     summary.to_csv(csv_out, index=False)
     print(f"  Summary CSV saved to:\n    {csv_out}")

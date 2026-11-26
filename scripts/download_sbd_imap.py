@@ -80,11 +80,12 @@ def list_all_folders(imap) -> list[str]:
 
 
 def search_all_folders(imap, since_imap: str, before_imap: str, imei: str,
-                        fromaddr: str, pwd: str, email_addr: str,
-                        imap_server: str, imap_port: int) -> tuple[list, str]:
+                        fromaddr: str, **_kwargs) -> tuple[list, str]:
     """
     Search every folder in the mailbox and return (msg_ids, folder_name)
     for the first folder that has matching messages.
+    Extra keyword arguments (pwd, email_addr, imap_server, imap_port) are
+    accepted but ignored — the existing imap connection is reused.
     """
     folders = list_all_folders(imap)
     print(f"ALL_FOLDERS_FOUND={len(folders)}: {folders}")
