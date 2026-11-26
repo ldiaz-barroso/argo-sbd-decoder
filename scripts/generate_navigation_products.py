@@ -526,6 +526,10 @@ def _try_parse_flat_technical(df: pd.DataFrame, imei: str, date_folder: str, pat
     sbd_file_col = None
     date_col = None
     internal_pres_col = None
+    internal_temp_col = None
+    descent_speed_col = None
+    ascent_speed_col = None
+    battery_col = None
     has_profile_col = None
 
     for i, h in enumerate(header_row):
@@ -543,6 +547,14 @@ def _try_parse_flat_technical(df: pd.DataFrame, imei: str, date_folder: str, pat
             date_col = i
         elif "internal pressure" in h or "internal_pressure" in h:
             internal_pres_col = i
+        elif "internal temperature" in h or "internal_temperature" in h:
+            internal_temp_col = i
+        elif "descent speed" in h or "descent_speed" in h:
+            descent_speed_col = i
+        elif "ascent speed" in h or "ascent_speed" in h:
+            ascent_speed_col = i
+        elif "battery" in h or "battery_voltage" in h:
+            battery_col = i
         elif "has profile" in h or "has_profile" in h:
             has_profile_col = i
 
@@ -656,6 +668,10 @@ def _try_parse_flat_technical(df: pd.DataFrame, imei: str, date_folder: str, pat
             "cycle_timing_nonzero_count": 0,
             "is_end_of_life_candidate": False,
             "internal_pressure_mbar": safe_float(row.iloc[internal_pres_col]) if internal_pres_col is not None and internal_pres_col < len(row) else np.nan,
+            "internal_temperature_degC": safe_float(row.iloc[internal_temp_col]) if internal_temp_col is not None and internal_temp_col < len(row) else np.nan,
+            "descent_speed_mbar_sec": safe_float(row.iloc[descent_speed_col]) if descent_speed_col is not None and descent_speed_col < len(row) else np.nan,
+            "ascent_speed_mbar_sec": safe_float(row.iloc[ascent_speed_col]) if ascent_speed_col is not None and ascent_speed_col < len(row) else np.nan,
+            "battery_voltage_drop_at_pmax": safe_float(row.iloc[battery_col]) if battery_col is not None and battery_col < len(row) else np.nan,
         })
 
     if not rows:
@@ -1232,9 +1248,11 @@ def plot_series(df: pd.DataFrame, outdir: Path, imei: str) -> list[Path]:
     outdir.mkdir(parents=True, exist_ok=True)
     outputs=[]
     variables=[
-        ("battery_voltage_drop_at_pmax","Battery voltage drop at Pmax",True),
+        ("battery_voltage_drop_at_pmax","Battery voltage drop at Pmax (V)",True),
         ("internal_pressure_mbar","Internal pressure (mbar)",True),
         ("internal_temperature_degC","Internal temperature (degC)",True),
+        ("descent_speed_mbar_sec","Descent speed (mBar/sec)",True),
+        ("ascent_speed_mbar_sec","Ascent speed (mBar/sec)",True),
         ("speed_m_per_hour","Drift speed (m/hour)",False),
         ("heading_deg","Drift heading (degrees)",False),
         ("range_m","Range between fixes (m)",False),

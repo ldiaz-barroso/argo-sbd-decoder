@@ -148,6 +148,18 @@ class ArvorCDecoder(BaseDecoder):
             "gps_lon": lon if gps_valid else None,
             "gps_valid": gps_valid,
             "sbd_file": file_name,
+            # Engineering fields — validated against Coriolis MATLAB
+            # print_tech_data_in_csv_file_219_220.m:
+            #   a_tabTech(idT,18)*5 → internal vacuum in mbar           = values[16]*5
+            #   10 - a_tabTech(idT,19)/10 → battery voltage (V)         = 10 - values[17]/10
+            #   a_tabTech(idT,20) → internal temperature in °C (integer) = values[18]  (NO factor)
+            #   a_tabTech(idT,21) → descent speed (cBar/sec)             = values[19]
+            #   a_tabTech(idT,22) → ascent speed (cBar/sec)              = values[20]
+            "internal_pressure_mbar":    values[16] * 5 if len(values) > 16 and values[16] != 0 else None,
+            "battery_voltage_drop_at_pmax": round(10.0 - values[17] / 10.0, 1) if len(values) > 17 and values[17] != 0 else None,
+            "internal_temperature_degC": float(values[18]) if len(values) > 18 and values[18] != 0 else None,
+            "descent_speed_mbar_sec":    values[19] if len(values) > 19 and values[19] != 0 else None,
+            "ascent_speed_mbar_sec":     values[20] if len(values) > 20 and values[20] != 0 else None,
         }))
 
     def _decode_ctd_asc(self, payload: bytes, file_name: str, file_date: Optional[datetime]):

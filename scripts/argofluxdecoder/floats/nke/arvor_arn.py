@@ -20,7 +20,7 @@ Reference:
   DOI: https://doi.org/10.17882/45589
 """
 
-import math
+import math  # noqa: F401 — kept for compatibility; not currently used directly
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
@@ -155,8 +155,13 @@ class ArvorArnDecoder(BaseDecoder):
             "deep_profile_pressure": values[14],
             "pressure_offset": pres_offset,
             "internal_pressure_mbar": values[47] * 5 if len(values) > 47 and values[47] != 0 else None,
-            "battery_voltage_start": values[17],
-            "battery_voltage_end": values[18],
+            # Battery voltage at Pmax (V)
+            # Formula from Coriolis print_tech_data_in_csv_file_212.m:
+            # "voltage dropout from 15V, resolution 0.1V"
+            # battery_voltage = 15.0 - tabTech1(49) / 10.0
+            # tabTech1(49) = values[48] (1-based MATLAB index with ID_OFFSET=1)
+            # Validated: values[48]=55 → 9.5V ✓, values[48]=57 → 9.3V ✓
+            "battery_voltage_drop_at_pmax": round(15.0 - values[48] / 10.0, 1) if len(values) > 48 and values[48] != 0 else None,
             "float_time": float_time,
             "gps_lat": lat if gps_valid else None,
             "gps_lon": lon if gps_valid else None,

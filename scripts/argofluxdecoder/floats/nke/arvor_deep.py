@@ -29,7 +29,7 @@ from datetime import datetime
 
 from ..base import (
     BaseDecoder, CTDMeasurement, TechnicalData,
-    HydraulicAction, GPSFix, DecodedCycle
+    HydraulicAction, GPSFix,
 )
 from ...core.bit_utils import get_bits, twos_complement, decode_gps
 from ...core.time_utils import nke_date_to_datetime
@@ -129,13 +129,6 @@ class ArvorDeepDecoder(BaseDecoder):
         # Pressure offset: tabTech1(44) = index 43
         pres_offset = twos_complement(values[43], 8) / 10.0 if len(values) > 43 else 0.0
 
-        # Internal pressure: same position as other decoders (index 44 for 221)
-        # In 221 layout, the internal pressure field may be at a different index.
-        # For now use index 44 (needs validation with real ARVOR-Deep data).
-        internal_pres = None
-        if len(values) > 44 and values[44] != 0:
-            internal_pres = values[44] * 5
-
         # GPS location: tabTech1(50:53) = indices 49-52 (lat: deg, min, frac, sign)
         #               tabTech1(54:57) = indices 53-56 (lon: deg, min, frac, sign)
         gps_valid = True
@@ -161,7 +154,11 @@ class ArvorDeepDecoder(BaseDecoder):
         tech = TechnicalData(cycle=cycle_num, data={
             "iridium_session": values[1] if len(values) > 1 else 0,
             "pressure_offset": pres_offset,
-            "internal_pressure_mbar": internal_pres,
+            # Engineering fields — from print_tech_data_in_csv_file_221.m (ID_OFFSET=1):
+            #   a_tabTech1(id, 45+ID_OFFSET)*5 → internal pressure in mbar = values[44]*5
+            #   15 - a_tabTech1(id, 46+ID_OFFSET)/10 → battery voltage (V) = 15 - values[45]/10
+            "internal_pressure_mbar": values[44] * 5 if len(values) > 44 and values[44] != 0 else None,
+            "battery_voltage_drop_at_pmax": round(15.0 - values[45] / 10.0, 1) if len(values) > 45 and values[45] != 0 else None,
             "float_time": float_time,
             "gps_lat": lat if gps_valid else None,
             "gps_lon": lon if gps_valid else None,

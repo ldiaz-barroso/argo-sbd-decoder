@@ -32,7 +32,7 @@ from datetime import datetime
 
 from ..base import (
     BaseDecoder, CTDMeasurement, TechnicalData,
-    HydraulicAction, GPSFix, DecodedCycle
+    HydraulicAction, GPSFix,
 )
 from ...core.bit_utils import get_bits, twos_complement, decode_gps
 from ...core.time_utils import nke_date_to_datetime
@@ -166,12 +166,25 @@ class ProvorSbdDecoder(BaseDecoder):
                 date=gps_time if gps_time else file_date, valid=True,
             ))
 
-        # Internal pressure (vacuum) — index 47, multiply by 5 to get mbar
-        # From Coriolis MATLAB: field 48 in tabTech1 (1-based) = index 47 (0-based)
-        # Validated: 113*5=565, 111*5=555, 110*5=550 match NKE reference exactly
+        # Internal pressure (vacuum) — from Coriolis MATLAB print_tech_data_in_csv_file_*.m:
+        #   IDs 201/203/215: a_tabTech(id, 46)*5 → index 45 (no ID_OFFSET)
+        #   IDs 210/211:     a_tabTech1(id, 48+ID_OFFSET)*5 → index 47
+        #   IDs 213/215 use same layout as 212 (ARVOR-ARN): index 47
+        # Battery (15V reference, 0.1V resolution):
+        #   IDs 201/203/215: 15 - a_tabTech(id, 47)/10 → index 46
+        #   IDs 210/211:     15 - a_tabTech1(id, 49+ID_OFFSET)/10 → index 48
+        if self.decoder_id in (201, 203, 215):
+            pres_idx, batt_idx = 45, 46
+        else:
+            # 210, 211, 213 — same layout as ARVOR-ARN (212)
+            pres_idx, batt_idx = 47, 48
+
         internal_pressure_mbar = None
-        if len(values) > 47 and values[47] != 0:
-            internal_pressure_mbar = values[47] * 5
+        battery_voltage = None
+        if len(values) > pres_idx and values[pres_idx] != 0:
+            internal_pressure_mbar = values[pres_idx] * 5
+        if len(values) > batt_idx and values[batt_idx] != 0:
+            battery_voltage = round(15.0 - values[batt_idx] / 10.0, 1)
 
         # Pressure offset — index 46 (tabTech1(47) in MATLAB)
         # MATLAB applies: twos_complement(val, 8) / 10
@@ -187,6 +200,7 @@ class ProvorSbdDecoder(BaseDecoder):
             "gps_valid": gps_valid,
             "float_time": gps_time,
             "internal_pressure_mbar": internal_pressure_mbar,
+            "battery_voltage_drop_at_pmax": battery_voltage,
             "pressure_offset": pressure_offset,
             "sbd_file": file_name,
         })
